@@ -494,7 +494,7 @@ kerberos:
 # Airflow Worker Config
 workers:
   # Number of airflow celery workers in StatefulSet
-  replicas: 3
+  replicas: 2
   # Max number of old replicasets to retain
   revisionHistoryLimit: ~
 
@@ -628,7 +628,7 @@ workers:
     #   whenDeleted: Delete
     #   whenScaled: Delete
     # Volume size for worker StatefulSet
-    size: 100Gi
+    size: 20Gi
     # If using a custom storageClass, pass name ref to all statefulSets here
     storageClassName:
     # Execute init container to chown log directory.

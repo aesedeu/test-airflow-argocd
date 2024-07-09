@@ -1,47 +1,61 @@
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: endpoint
-#   namespace: argocd
-# spec:
-#   project: default
-
-#   source:
-#     repoURL: https://github.com/aesedeu/argotest.git
-#     targetRevision: HEAD
-#     path: dev
-#   destination: 
-#     server: https://kubernetes.default.svc
-#     namespace: test
-
-#   syncPolicy:
-#     syncOptions:
-#     - CreateNamespace=true
-
-#     automated:
-#       selfHeal: true
-#       prune: true
----
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: postgres
-  namespace: test
+  name: apache-airflow
+  namespace: argocd
 spec:
-  project: default
-
-  source:
-    repoURL: https://github.com/aesedeu/argotest.git
-    targetRevision: HEAD
-    path: dev2
-  destination: 
+  destination:
+    name: ''
+    namespace: apache-airflow
     server: https://kubernetes.default.svc
-    namespace: test
-
+  source:
+    path: 'airflow-app'
+    repoURL: https://github.com/aesedeu/test-airflow-argocd.git
+    targetRevision: HEAD
+    # helm:
+    #   valueFiles:
+    #   - values.yaml
+      # parameters:
+      #   - name: config.core.executor
+      #     value: CeleryExecutor
+      #   - name: dags.gitSync.enabled
+      #     value: true
+      #   - name: dags.gitSync.repo
+      #     value: >-
+      #       https://github.com/aesedeu/k8s-dags.git
+      #   - name: dags.gitSync.branch
+      #     value: main
+      #   - name: dags.gitSync.rev
+      #     value: HEAD
+      #   - name: dags.gitSync.ref
+      #     value: main
+      #   - name: dags.gitSync.subPath
+      #     value: ''
+      #   - name: executor
+      #     value: CeleryExecutor
+      #   - name: workers.persistence.size
+      #     value: 10Gi
+      #   - name: webserver.defaultUser.firstName
+      #     value: administrator-test
+      #   - name: webserver.defaultUser.username
+      #     value: airflow
+      #   - name: webserver.defaultUser.password
+      #     value: airflow
+      #   - name: webserver.defaultUser.lastName
+      #     value: Admin
+      #   - name: webserver.defaultUser.email
+      #     value: admin@airflow.com
+  sources: []
+  project: default
   syncPolicy:
     syncOptions:
-    - CreateNamespace=true
-
+      - CreateNamespace=true
     automated:
-      selfHeal: true
       prune: true
+      selfHeal: true
+    retry:
+      limit: 2
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
